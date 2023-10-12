@@ -36,7 +36,7 @@ char* init_workspace()
 	strcpy(source_path, path);
 	char *source_path_p = strcat(source_path, "main");
 	mkdir(source_path, 0777);
-	return source_path_p;
+	return path;
 	
 }
 
@@ -49,7 +49,10 @@ void compile(int sockfd)
 	char header[SIZE];
 	char *workspace = init_workspace();
 	char *board_name = "arduino:avr:mega:cpu=atmega2560"; // Fallback board fqbn
-	char *file_to_save = strcat(workspace, "/main.ino");
+	char compile_command[100] = "make -f BuildConfigs/Arduino.mk build"; // Default Arduino Build Config; Todo make configurable
+	char file_to_save[100];
+	strcpy(file_to_save, workspace);
+	strcat(file_to_save, "/main/main.ino");
 	printf("Source location: %s\n", workspace);
 
 	fp = fopen(file_to_save, "w");
@@ -68,18 +71,22 @@ void compile(int sockfd)
 		for (;;)
 		{
 			n = recv(sockfd, buffer, SIZE, 0);
-			if (n <= 0)
-			{
-				break;
-				return;
-			}
+			if (n <= 0) break;
 			fprintf(fp, "%s", buffer);
 			bzero(buffer, SIZE);
 		}
 	}
-	// const char *command = "make -f " "BuildConfigs/Arduino.mk" " fqbn=";
-	printf("File saved. Compiling...\n");
-	system(command);
+	// make -f BuildConfigs/Arduino.mk fqbn=BOARD_NAME workspace=WORKSPACE
+	strcat(compile_command, " fqbn=");
+	strcat(compile_command, board_name);
+
+	strcat(compile_command, " workspace=");
+	strcat(compile_command, workspace);
+
+	printf("[+]File saved. Compiling...\n");
+	printf("Command: %s\n", compile_command);
+	system(compile_command);
+	// system("make -f BuildConfigs/Arduino.mk build fqbn=arduino:avr:mega:cpu=atmega2560 workspace=/tmp/TestPro/");
 	return;
 }
 

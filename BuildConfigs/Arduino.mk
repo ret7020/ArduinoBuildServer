@@ -3,4 +3,4 @@
 # workspace - workspace path
 
 build:
-	arduino-cli compile --fqbn $(fqbn) $(workspace)/main --build-path $(workspace)/build
+	arduino-cli compile --fqbn $(fqbn) $(workspace)main --build-path $(workspace)build
