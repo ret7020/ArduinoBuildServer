@@ -6,22 +6,26 @@
 
 #define SIZE 1024
 
-
 void send_file(FILE *fp, int sockfd)
 {
     char data[SIZE] = {0};
-    if (send(sockfd, data, sizeof(data), 0) != -1){
-        while (fgets(data, SIZE, fp) != NULL)
+    char header[SIZE] = "arduino:avr:mega:cpu=atmega2560";
+    // Send header
+    if (send(sockfd, header, sizeof(header), 0) != -1)
+    {
+        if (send(sockfd, data, sizeof(data), 0) != -1)
         {
-            if (send(sockfd, data, sizeof(data), 0) == -1)
+            while (fgets(data, SIZE, fp) != NULL)
             {
-                perror("[-] Error in sending data chunk");
-                exit(1);
+                if (send(sockfd, data, sizeof(data), 0) == -1)
+                {
+                    perror("[-] Error in sending data chunk");
+                    exit(1);
+                }
+                bzero(data, SIZE);
             }
-            bzero(data, SIZE);
         }
     }
-    
 }
 
 int main()

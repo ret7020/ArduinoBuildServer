@@ -9,23 +9,35 @@
 
 #define SIZE 1024
 
-char *init_workspace()
+char* init_workspace()
 {
 	time_t rawtime;
 	struct tm *timeinfo;
 	char buffer[120];
 	char *path = (char *)malloc(100 * sizeof(char));
-	char *path_final;
 
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 	strftime(buffer, 120, "./tmp/build_%Y_%m_%d_%H_%M_%S/", timeinfo);
 	strcat(path, buffer);
 
+	static char source_path[120];
+	char build_path[120];
+
+	// Create workspace directory
 	mkdir(path, 0777);
-	path_final = strcat(path, "main");
-	mkdir(path_final, 0777);
-	return path_final;
+	
+	// Create build directory
+	strcpy(build_path, path);
+	strcat(build_path, "build");
+	mkdir(build_path, 0777);
+
+	// Create source files directory
+	strcpy(source_path, path);
+	char *source_path_p = strcat(source_path, "main");
+	mkdir(source_path, 0777);
+	return source_path_p;
+	
 }
 
 void compile(int sockfd)
@@ -34,6 +46,7 @@ void compile(int sockfd)
 	int n;
 	FILE *fp;
 	char buffer[SIZE];
+	char header[SIZE];
 	char *workspace = init_workspace();
 	char *board_name = "arduino:avr:mega:cpu=atmega2560"; // Fallback board fqbn
 	char *file_to_save = strcat(workspace, "/main.ino");
@@ -43,13 +56,15 @@ void compile(int sockfd)
 	if (fp == NULL)
 	{
 		perror("[-]Error in creating file.");
-		exit(1);
+		exit(1); // TODO
 	}
 	// Recieve compile task header
-	n = recv(sockfd, buffer, SIZE, 0);
+	n = recv(sockfd, header, SIZE, 0);
+	board_name = header;
+	printf("Compile for board: %s\n", board_name);
+
 	if (n > 0)
 	{
-
 		for (;;)
 		{
 			n = recv(sockfd, buffer, SIZE, 0);
@@ -62,9 +77,9 @@ void compile(int sockfd)
 			bzero(buffer, SIZE);
 		}
 	}
-
+	// const char *command = "make -f " "BuildConfigs/Arduino.mk" " fqbn=";
 	printf("File saved. Compiling...\n");
-	// system("arduino-cli");
+	system(command);
 	return;
 }
 
