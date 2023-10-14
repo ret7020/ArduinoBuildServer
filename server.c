@@ -49,7 +49,7 @@ void compile(int sockfd)
 	char header[SIZE];
 	char *workspace = init_workspace();
 	char *board_name = "arduino:avr:mega:cpu=atmega2560"; // Fallback board fqbn
-	char compile_command[100] = "make -f BuildConfigs/Arduino.mk build"; // Default Arduino Build Config; Todo make configurable
+	char compile_command[100] = "bash -c 'make -f BuildConfigs/Arduino.mk build"; // Default Arduino Build Config; Todo make configurable
 	char file_to_save[100];
 	strcpy(file_to_save, workspace);
 	strcat(file_to_save, "/main/main.ino");
@@ -61,7 +61,7 @@ void compile(int sockfd)
 		perror("[-]Error in creating file.");
 		exit(1); // TODO
 	}
-	// Recieve compile task header
+	// Recieve compile task header1
 	n = recv(sockfd, header, SIZE, 0);
 	board_name = header;
 	printf("Compile for board: %s\n", board_name);
@@ -76,17 +76,18 @@ void compile(int sockfd)
 			bzero(buffer, SIZE);
 		}
 	}
-	// make -f BuildConfigs/Arduino.mk fqbn=BOARD_NAME workspace=WORKSPACE
+	pclose(fp);
+	// Final command example: make -f BuildConfigs/Arduino.mk fqbn=BOARD_NAME workspace=WORKSPACE
 	strcat(compile_command, " fqbn=");
 	strcat(compile_command, board_name);
 
 	strcat(compile_command, " workspace=");
 	strcat(compile_command, workspace);
+	strcat(compile_command, "'");
 
 	printf("[+]File saved. Compiling...\n");
 	printf("Command: %s\n", compile_command);
 	system(compile_command);
-	// system("make -f BuildConfigs/Arduino.mk build fqbn=arduino:avr:mega:cpu=atmega2560 workspace=/tmp/TestPro/");
 	return;
 }
 
