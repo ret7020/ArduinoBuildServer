@@ -1,0 +1,2 @@
+# Arduino Build Server
+Arduino Build Server - build arduino and not only arduino projects on remote host and upload on current. For example you can connect rpi and arduino via usb cable and upload sketches to arduino from rpi. But rpi compiles sketches slow, so you can boost it, if compile sketch on fast machine and than upload from rpi. Why you can't compile arduino sketch on pc and upload it from pc? - You can, but when it is not bundled solution, when you can easily disconnect arduino from rpi and connect to pc.

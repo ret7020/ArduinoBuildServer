@@ -28,6 +28,10 @@ void send_file(FILE *fp, int sockfd)
     }
 }
 
+void recieve_data_from_server(int sockfd){ 
+
+}
+
 int main()
 {
     char *ip = "127.0.0.1";
@@ -65,6 +69,12 @@ int main()
     }
     send_file(fp, sockfd);
     printf("[+] File data send successfully. \n");
+    // Listen to binary
+    // TODO; Move to recieve_data_from_server and separate thread
+    char buffer[SIZE];
+    int n;
+    n = recv(sockfd, buffer, SIZE, 0);
+    printf("Data: %s", buffer);
     close(sockfd);
     printf("[+]Disconnected from the server. \n");
     return 0;

@@ -49,7 +49,7 @@ void compile(int sockfd)
 	char header[SIZE];
 	char *workspace = init_workspace();
 	char *board_name = "arduino:avr:mega:cpu=atmega2560"; // Fallback board fqbn
-	char compile_command[100] = "bash -c 'make -f BuildConfigs/Arduino.mk build"; // Default Arduino Build Config; Todo make configurable
+	char compile_command[100] = "bash -c 'make -f BuildConfigs/Arduino.mk"; // Default Arduino Build Config; Todo make configurable
 	char file_to_save[100];
 	strcpy(file_to_save, workspace);
 	strcat(file_to_save, "/main/main.ino");
@@ -70,6 +70,7 @@ void compile(int sockfd)
 	{
 		for (;;)
 		{
+			printf("%d", n);
 			n = recv(sockfd, buffer, SIZE, 0);
 			if (n <= 0) break;
 			fprintf(fp, "%s", buffer);
@@ -88,6 +89,8 @@ void compile(int sockfd)
 	printf("[+]File saved. Compiling...\n");
 	printf("Command: %s\n", compile_command);
 	system(compile_command);
+	// send(sockfd, header, sizeof(header), 0);
+
 	return;
 }
 
