@@ -6,10 +6,10 @@
 
 #define SIZE 1024
 
-void send_file(FILE *fp, int sockfd)
+void compile_request(FILE *fp, int sockfd, char *name)
 {
     char data[SIZE] = {0};
-    char header[SIZE] = "arduino:avr:mega:cpu=atmega2560";
+    char header[SIZE] = "arduino:avr:mega:cpu=atmega2560"; // Board
     // Send header
     if (send(sockfd, header, sizeof(header), 0) != -1)
     {
@@ -67,15 +67,16 @@ int main()
         perror("[-]Error in reading file.");
         exit(1);
     }
-    send_file(fp, sockfd);
+    compile_request(fp, sockfd);
     printf("[+] File data send successfully. \n");
+    
     // Listen to binary
     // TODO; Move to recieve_data_from_server and separate thread
-    char buffer[SIZE];
-    int n;
-    n = recv(sockfd, buffer, SIZE, 0);
-    printf("Data: %s", buffer);
-    close(sockfd);
-    printf("[+]Disconnected from the server. \n");
+    // char buffer[SIZE];
+    // int n;
+    // n = recv(sockfd, buffer, SIZE, 0);
+    // printf("Data: %s", buffer);
+    // close(sockfd);
+    // printf("[+]Disconnected from the server. \n");
     return 0;
 }

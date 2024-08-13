@@ -53,7 +53,7 @@ void compile(int sockfd)
 	char file_to_save[100];
 	strcpy(file_to_save, workspace);
 	strcat(file_to_save, "/main/main.ino");
-	printf("Source location: %s\n", workspace);
+	printf("[I]Source location: %s\n", workspace);
 
 	fp = fopen(file_to_save, "w");
 	if (fp == NULL)
@@ -64,7 +64,7 @@ void compile(int sockfd)
 	// Recieve compile task header1
 	n = recv(sockfd, header, SIZE, 0);
 	board_name = header;
-	printf("Compile for board: %s\n", board_name);
+	printf("[I]Compile for board: %s\n", board_name);
 
 	if (n > 0)
 	{
